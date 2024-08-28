@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Rutina</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div class="background">
+        <form id="exerciseForm">
+            <h1>Registro de Rutina</h1>
+            <label for="name">Nombre del Ejercicio:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="series">Numero de Series:</label>
+            <input type="number" id="series" name="series" required min="1">
+
+            <button type="submit">Añadir</button>
+        </form>
+
+        <div id="message"></div>
+
+        <div id="exerciseList">
+            <h2>Tu Rutina:</h2>
+            <ul id="exerciseItems"></ul>
+        </div>
+    </div>
+    <script src="rutine.js"></script>
+</body>
+</html>
