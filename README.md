@@ -41,6 +41,6 @@ ExerciseService -->|Manages| Exercise
 
 ## Evaluación
 Además de pruebas unitarias de las clases que implementaban reglas de negocio, se llevaron a cabo pruebas de usuario con las funcionalidades de la aplicación
-![image](/src/main/resources/webroot/test.PNG)
+![image](/src/main/resources/webroot/Test.PNG)
 ![image](/src/main/resources/webroot/PantallaInicio.PNG)
 ![image](/src/main/resources/webroot/AgregandoEjercicios.PNG)
