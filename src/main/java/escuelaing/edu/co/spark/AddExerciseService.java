@@ -11,7 +11,6 @@ public class AddExerciseService implements RESTService {
 
     @Override
     public String response(String request) {
-    // Suponiendo que el request tiene la forma /app/addExercise?name=Dominadas&series=3
     String[] params = request.split("\\?");
     if (params.length < 2) return "{\"error\":\"Invalid request\"}";
 
@@ -33,7 +32,6 @@ public class AddExerciseService implements RESTService {
         }
     }
 
-    // Verificar que los parámetros no sean nulos
     if (name == null || series == null) {
         return "{\"error\":\"Missing parameters\"}";
     }
