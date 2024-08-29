@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.URI;
 
 class ClientHandler implements Runnable {
     private Socket clientSocket;
@@ -26,27 +27,33 @@ class ClientHandler implements Runnable {
             if (requestLine == null) return;
             String[] tokens = requestLine.split(" ");
             String method = tokens[0];
-            String fileRequested = tokens[1];
+            String URI = tokens[1];
  
             printRequestHeader(requestLine,in);
 
 
-            if (method.equals("GET") && !fileRequested.startsWith("/app")) {
-                handleGetRequest(fileRequested, out, dataOut);
+            if (method.equals("GET") && !URI.startsWith("/app")) {
+                handleGetRequest(URI, out, dataOut);
             } 
-            
-            if (method.equals("GET") && fileRequested.startsWith("/app/exercises")){
-                out.println("HTTP/1.1 200 OK");
-                out.println("Content-type: " + "application/json");
-                out.println();
-                out.println(Spark.services.get("listExerciseService").response(fileRequested));
-            }
-            
-            else if (method.equals("POST") && fileRequested.startsWith("/app/addExercise")){
-                out.println("HTTP/1.1 200 OK");
-                out.println("Content-type: " + "application/json");
-                out.println();
-                out.println(Spark.services.get("addExercise").response(fileRequested));
+            else{
+                try {
+                    String responseBody = callService(URI, method);
+                    int contentLength = responseBody.getBytes().length;
+    
+                    out.print("HTTP/1.1 200 OK\r\n");
+                    out.print("Content-Type: application/json\r\n");
+                    out.print("Content-Length: " + contentLength + "\r\n");
+                    out.print("\r\n");
+                    out.print(responseBody);
+                    out.flush();
+                } catch (Exception e) {
+                    out.print("HTTP/1.1 500 Internal Server Error\r\n");
+                    out.print("Content-Type: text/html\r\n");
+                    out.print("\r\n");
+                    out.print("<html><body><h1>Internal Server Error</h1></body></html>");
+                    out.flush();
+                    e.printStackTrace();
+                }
             }
  
         } catch (IOException e) {
@@ -68,7 +75,7 @@ class ClientHandler implements Runnable {
     }
  
     private void handleGetRequest(String fileRequested, PrintWriter out, BufferedOutputStream dataOut) throws IOException {
-        File file = new File(Spark.WEB_ROOT, fileRequested);
+        File file = new File(Rutine.WEB_ROOT, fileRequested);
         int fileLength = (int) file.length();
         String content = getContentType(fileRequested);
  
@@ -91,6 +98,19 @@ class ClientHandler implements Runnable {
         }
     }
  
+    private String callService(String URI, String method) {
+        RESTService restService = Spark.findHandler(queryClean(URI), method);
+        return restService.response(URI);
+    }
+
+    private String queryClean(String uri){
+        int index = uri.indexOf('?');
+        if (index != -1) {
+            return uri.substring(0, index);
+        }
+        return uri;
+    }
+
     private String getContentType(String fileRequested) {
         if (fileRequested.endsWith(".html")) return "text/html";
         else if (fileRequested.endsWith(".css")) return "text/css";

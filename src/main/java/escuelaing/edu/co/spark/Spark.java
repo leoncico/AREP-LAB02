@@ -1,49 +1,40 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package escuelaing.edu.co.spark;
 
-/**
- *
- * @author David Leonardo Pineros
- */
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.Function;
- 
+
 public class Spark {
-    private static final int PORT = 8080;
-    public static final String WEB_ROOT = "target/classes/webroot";
-    public static final Map<String, RESTService> services = new HashMap();
-    public static final ExerciseService exerciseService = new ExerciseService();
-    
-    public static void get(String path, Function<String, String> lambda) {
-        services.put(path, request -> lambda.apply(request));
+    private static Spark instance;
+    public static final Map<String, RESTService> getServices = new HashMap();
+    public static final Map<String, RESTService> postServices = new HashMap();
+
+    public static Spark getInstance(){
+        if(instance == null){
+            instance = new Spark();
+        }
+        return instance;
     }
 
-    public static void main(String[] args) throws IOException {
-        ExecutorService threadPool = Executors.newFixedThreadPool(10);
-        ServerSocket serverSocket = new ServerSocket(PORT);
-        addServices();
- 
-        Spark.get("/app/hello1", (request) -> "{\"message\":\"Hello, world!\"}");
-
-        while (true) {
-            Socket clientSocket = serverSocket.accept();
-            threadPool.submit(new ClientHandler(clientSocket));
+    public static RESTService findHandler(String path, String method) {
+        if ("GET".equalsIgnoreCase(method)) {
+            return getInstance().getServices.get(path);
+        } else if ("POST".equalsIgnoreCase(method)) {
+            return getInstance().postServices.get(path);
+        }else {
+            return null;
         }
     }
-    
-    private static void addServices(){
-        services.put("addExercise", new AddExerciseService(exerciseService));
-        services.put("listExerciseService", new ListExerciseService(exerciseService));
+
+    public static void get(String path, RESTService service) {
+        getServices.put(path, service);
     }
 
+    public static void post(String path, RESTService service) {
+        postServices.put(path, service);
+    }
+
+    public static void staticFileLocation(String path) {
+        Rutine.getInstance().setStaticFileLocation(path);
+    }
 
 }
