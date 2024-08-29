@@ -1,5 +1,5 @@
 # AREP-LAB02
-
+## Autor: David Leonardo Piñeros Cortés
 #  TALLER DE MICROFRAMEWORKS WEB
 El objetivo de este taller es completar nuestro servidor web construido durante el Taller 1, de forma que se convierta en un framework web simple funcional. Esto se hará mediante funciones lambda, manejo de variables dentro del request y la posibilidad de establecer el directorio
 que alojará los archivos estáticos
